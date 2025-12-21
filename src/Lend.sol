@@ -4,7 +4,7 @@ pragma solidity ^0.8.25;
 import { IVaultV2 } from "@morpho-org/vault-v2/src/interfaces/IVaultV2.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract DepositAsLender {
+contract Lend {
 
     IVaultV2 public immutable vault;
 
@@ -13,13 +13,10 @@ contract DepositAsLender {
     }
 
     /**
-     * @notice Deposit `amount` of the vault's underlying asset
-     *         into the Morpho Vault on behalf of this contract.
+     * @notice After this function executes,
+     * this contract should have vault shares.
      */
     function supplyAsset(uint256 amount) external {
-        // TODO:
-        // 1. Get the underlying asset from the vault
-        // 2. Approve the vault to pull `amount`
-        // 3. Deposit the assets into the vault
+        // Add your code here
     }
 }
