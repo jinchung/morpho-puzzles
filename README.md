@@ -84,10 +84,23 @@ forge test --match-path test/Lend.t.sol
 
 #### Step 5: Iterate Until Success
 
-Continue refining your implementation until all tests pass:
+Continue refining your implementation until all tests pass.
 
-- Use Foundry's verbose output (`-vv`, `-vvv`, `-vvvv`) to debug failures
-- Reference [Morpho's documentation](https://docs.morpho.org/) for protocol details
+### Suggested Order for the Puzzles
+
+While each puzzle can be solved independently, we recommend completing them
+in the following order to build intuition progressively:
+
+#### 1. Deposit as Lender (`Lend.sol`)
+
+#### 2. Deposit as Borrower (`Borrow.sol`) 
+
+#### 3. Liquidation (`Liquidation.sol`)  
+
+#### 4. Flash Loans (`FlashLoan.sol`)
+
+Helpful Resources:
+- Morpho Docs [Morpho's documentation](https://docs.morpho.org/) 
 
 
 <div align="center">
