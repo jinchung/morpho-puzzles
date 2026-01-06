@@ -1,72 +1,99 @@
 # morpho-puzzles by [RareSkills](https://www.rareskills.io)
-This repository contains a set of hands-on puzzles designed to teach core
-Morpho protocol mechanics through direct contract interaction.
-## Puzzles
 
-1. Deposit as Lender 
-2. Deposit as Borrower  
-3. Liquidation 
-4. Flash Loans
+This repository contains four interactive puzzles designed to teach core Morpho protocol operations through direct smart contract interaction. Each puzzle in this repository:
 
-Each puzzle:
-- Uses real Morpho contracts
-- Is tested on a mainnet fork
-- Requires writing a minimal solution contract
+- Uses real Morpho contracts deployed on Ethereum mainnet
+- Is tested on a mainnet fork for realistic scenarios
+- Requires implementing minimal, focused solution contracts
+- Emphasizes learning through direct protocol interaction, not abstractions
 
-The goal is to understand how Morpho works by interacting with it directly,
-not by reading abstractions.
+The goal is to understand how Morpho works by building with it directly, gaining practical experience that translates to real-world DeFi development.
 
-## Prerequisites 🛠️
+### Prerequisites
 
 Before starting, ensure you have the following tools installed and configured:
 
 * **[Foundry](https://book.getfoundry.sh/getting-started/installation)**: This project uses Foundry for compilation and testing. You must have `forge` installed.
+
 * **[Git](https://git-scm.com/downloads)**: Required to clone the repository.
+
 * **Ethereum Mainnet RPC**: You will need a Mainnet RPC URL (e.g., from [Alchemy](https://www.alchemy.com/), [Infura](https://www.infura.io/), or another provider) to fork the chain for testing.
 
-## How to play
+### Setup Instructions
 
-Each puzzle in this repository is intentionally incomplete.
+Follow these steps to configure your environment and begin solving puzzles:
 
-Your goal is to **“hack” the puzzle** by writing the missing logic so that the
-corresponding test passes.
+#### 1. Clone the Repository
+```bash
+git clone https://github.com/RareSkills/morpho-puzzles.git
+cd morpho-puzzles
+```
 
-### General workflow
+#### 2. Install Dependencies
+```bash
+forge install
+```
 
-1. Clone the repository
-   ```bash
-   git clone https://github.com/smartcondev/morpho-puzzles
-   cd morpho-puzzles
-   ```
-2. Install dependencies
-   ```bash
-   forge install
-   ```
-3. Create an .env file in the project root
-   ```bash
-   touch .env
-   ```
-4. Add a mainnet RPC endpoint to the `.env` file
-   ```bash
-   MAINNET_RPC_URL=<your_rpc_url_here>
-   ```
-5. Make sure your `foundry.toml` includes an RPC alias for mainnet
-   ```toml
-   [rpc_endpoints]
-   mainnet = "${MAINNET_RPC_URL}"
-   ```
-6. Pick a puzzle contract from the src/ directory
-   - Each puzzle contains one or more functions with TODO comments
-   - You are expected to complete only the logic inside these functions
-7. Open the corresponding test file in the test/ directory
-	- The test describes the expected behavior, not the solution
-	- Treat the test as the specification
-8. Run the test for that puzzle
-   ```bash
-   forge test --match-path test/<PuzzleName>.t.sol
-   ```
-9. Modify the puzzle contract until the test passes
+#### 3. Add your Ethereum mainnet RPC endpoint to the `.env` file:
+```bash
+MAINNET_RPC_URL= <Add Your RPC URL>
+```
+
+#### 4. Ensure your `foundry.toml` includes the RPC alias for mainnet:
+```toml
+[rpc_endpoints]
+mainnet = "${MAINNET_RPC_URL}"
+```
+
+### How to Play
 
 
+Each puzzle in this repository is intentionally incomplete. Your goal is to **implement the missing logic** so that the corresponding test passes, demonstrating your understanding of the Morpho protocol operation.
 
-                                      Happy Hacking! 🚀
+#### Step 1: Select a Puzzle
+
+Navigate to the `src/` directory and choose a puzzle contract to solve.
+
+- Each contract contains one or more functions marked with `// Add your code here`
+- You are expected to complete **only** the logic inside these functions
+- Do not modify function signatures or contract structure
+
+#### Step 2: Review the Test Specification
+
+Open the corresponding test file in the `test/` directory.
+
+- The test describes the **expected behavior**, not the solution
+- Treat the test as your specification and requirements document
+- Read the comments carefully—they explain the scenario, starting assets, and success criteria
+
+#### Step 3: Implement Your Solution
+
+Write the missing implementation in the puzzle contract.
+
+- Focus on calling Morpho contracts correctly
+- Handle token approvals and interactions properly
+- Keep your solution simple and readable
+- You may add helper functions if needed
+
+#### Step 4: Run the Tests
+
+Execute the test for a specific puzzle by running the following command:
+```bash
+forge test --match-path test/Lend.t.sol 
+```
+
+#### Step 5: Iterate Until Success
+
+Continue refining your implementation until all tests pass:
+
+- Use Foundry's verbose output (`-vv`, `-vvv`, `-vvvv`) to debug failures
+- Reference [Morpho's documentation](https://docs.morpho.org/) for protocol details
+
+
+<div align="center">
+
+**Happy Hacking! 🚀**
+
+Built with ❤️ by [RareSkills](https://www.rareskills.io)
+
+</div>
