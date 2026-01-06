@@ -57,7 +57,7 @@ contract LiquidateTest is Test {
         MORPHO.createMarket(marketParams);
 
         // 5. Setup LIQUIDITY PROVIDER (address(this))
-        // We supply 1M USDT so there is money to borrow
+        // We supply 1M USDC so there is money to borrow
         deal(address(USDC), address(this), 1_000_000e6);
         USDC.approve(address(MORPHO), type(uint256).max);
         MORPHO.supply(marketParams, 1_000_000e6, 0, address(this), "");
@@ -75,45 +75,130 @@ contract LiquidateTest is Test {
         // Supply 10 WETH collateral
         MORPHO.supplyCollateral(marketParams, 10 ether, borrower, "");
         
-        // Borrow 5,000 USDT
+        // Borrow 5,000 USDC
         MORPHO.borrow(marketParams, 5_000e6, 0, borrower, borrower);
         
         vm.stopPrank();
 
         // 7. Setup LIQUIDATOR (The Puzzle Solution)
         liquidator = new Liquidate(address(MORPHO));
-        // Give the liquidator funds to repay the debt
+        
+        // Give the liquidator 10,000 USDC to repay debt
+        // This is more robust than relying on whale addresses
         deal(address(USDC), address(liquidator), 10_000e6);
+        
+        // Verify initial balance
+        assertEq(
+            USDC.balanceOf(address(liquidator)),
+            10_000e6,
+            "Liquidator should start with 10,000 USDC"
+        );
     }
 
     function testLiquidation() public {
         Id marketId = marketParams.id();
 
-        // 1. Check State Before
+        // 1. Record state before liquidation
+        Position memory posBefore = MORPHO.position(marketId, borrower);
+        uint256 debtSharesBefore = posBefore.borrowShares;
+        uint256 collateralBefore = posBefore.collateral;
+
+        uint256 wethBefore = WETH.balanceOf(address(liquidator));
+        uint256 usdcBefore = USDC.balanceOf(address(liquidator));
+        
+        // Verify borrower has debt and collateral
+        assertGt(debtSharesBefore, 0, "Borrower should have debt");
+        assertGt(collateralBefore, 0, "Borrower should have collateral");
+        
+        // 2. CRASH THE MARKET 📉
+        // Set price to $400. 10 ETH is now worth $4,000.
+        // Debt is $5,000. LTV is > 100%. Position is underwater.
+        oracle.setPrice(400e24); 
+
+        // 3. Execute Liquidation via the puzzle contract
+        uint256 repayAmount = 1_000e6; // Repay 1,000 USDC
+        liquidator.liquidatePosition(marketParams, borrower, repayAmount);
+
+        // 4. Record state after liquidation
+        Position memory posAfter = MORPHO.position(marketId, borrower);
+        uint256 debtSharesAfter = posAfter.borrowShares;
+        uint256 collateralAfter = posAfter.collateral;
+
+        uint256 wethAfter = WETH.balanceOf(address(liquidator));
+        uint256 usdcAfter = USDC.balanceOf(address(liquidator));
+
+        // 5. Verify liquidation was successful
+        
+        // Debt should be reduced
+        assertLt(
+            debtSharesAfter,
+            debtSharesBefore,
+            "Borrower's debt shares should decrease"
+        );
+        
+        // Collateral should be reduced (seized by liquidator)
+        assertLt(
+            collateralAfter,
+            collateralBefore,
+            "Borrower's collateral should decrease"
+        );
+        
+        // Liquidator should receive WETH collateral
+        assertGt(
+            wethAfter,
+            wethBefore,
+            "Liquidator should receive WETH collateral"
+        );
+        
+        // Liquidator should have spent USDC to repay debt
+        assertLt(
+            usdcAfter,
+            usdcBefore,
+            "Liquidator should have spent USDC"
+        );
+        
+        // Verify USDC was spent (allow for interest accrual)
+        uint256 usdcSpent = usdcBefore - usdcAfter;
+        assertGt(usdcSpent, 0, "USDC should have been spent");
+        assertLe(
+            usdcSpent,
+            repayAmount + 1000, // Allow some buffer for rounding/interest
+            "USDC spent should not exceed repay amount significantly"
+        );
+    }
+
+    function testPartialLiquidation() public {
+        Id marketId = marketParams.id();
+
+        // Crash the market
+        oracle.setPrice(400e24);
+
+        // Record initial state
         Position memory posBefore = MORPHO.position(marketId, borrower);
         uint256 debtSharesBefore = posBefore.borrowShares;
 
-        uint256 wethBefore = WETH.balanceOf(address(liquidator));
-        
-        // 2. CRASH THE MARKET 📉
-        // Set price to $400. 10 ETH is now worth $4000.
-        // Borrow is $5000. LTV is > 100%. User is insolvent.
-        oracle.setPrice(400e24); 
+        // Liquidate only 500 USDC worth
+        liquidator.liquidatePosition(marketParams, borrower, 500e6);
 
-        // 3. Execute Liquidation via your contract
-        liquidator.liquidatePosition(
-            marketParams,
-            borrower,
-            1_000e6 // Repay 1,000 USDT
-        );
-
-        // 4. Check State After
+        // Verify partial liquidation
         Position memory posAfter = MORPHO.position(marketId, borrower);
         uint256 debtSharesAfter = posAfter.borrowShares;
 
-        uint256 wethAfter =WETH.balanceOf(address(liquidator));
-        // 5. Assertions
-        assertLt(debtSharesAfter, debtSharesBefore, "Borrower's debt shares did not decrease");
-        assertGt(wethAfter,wethBefore,"Liquidator did not receive WETH");
+        assertLt(debtSharesAfter, debtSharesBefore, "Debt should be reduced");
+        assertGt(debtSharesAfter, 0, "Some debt should remain");
+        
+        // Verify liquidator received collateral
+        assertGt(
+            WETH.balanceOf(address(liquidator)),
+            0,
+            "Liquidator should receive collateral"
+        );
+    }
+
+    function testCannotLiquidateHealthyPosition() public {
+        // Price is still healthy ($2000), so liquidation should fail
+        
+        vm.expectRevert();
+        liquidator.liquidatePosition(marketParams, borrower, 1_000e6);
     }
 }
