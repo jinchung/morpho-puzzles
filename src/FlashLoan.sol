@@ -13,12 +13,24 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * A flash loan allows you to borrow assets without collateral, but you must
  * repay the loan plus any fees within the same transaction.
  * 
+ * GIVEN:
+ * - The Morpho Blue address is provided in the constructor and stored in `morpho`
+ * - The `IMorpho` interface is available to interact with Morpho Blue
+ * - The `IMorphoFlashLoanCallback` interface defines the callback function
+ * - The token address is encoded in the `data` parameter of the callback
+ * 
  * OBJECTIVE:
  * Implement the onMorphoFlashLoan() callback function to:
- * 1. Receive the borrowed assets from Morpho
- * 2. Use the borrowed assets (in this case, just hold them temporarily)
- * 3. Approve Morpho to take back the borrowed amount
- * 4. Ensure Morpho can reclaim the full loan amount
+ * 1. Decode the token address from the `data` parameter
+ * 2. Receive the borrowed assets from Morpho (they're already in this contract)
+ * 3. Use the borrowed assets (in this case, just hold them temporarily)
+ * 4. Approve Morpho to take back the borrowed amount
+ * 5. Ensure Morpho can reclaim the full loan amount
+ * 
+ * HINT:
+ * - Use `abi.decode(data, (address))` to extract the token address
+ * - The borrowed tokens are already in this contract when the callback is called
+ * - You only need to approve Morpho to pull them back
  * 
  * SUCCESS CRITERIA:
  * - The flash loan completes without reverting
@@ -49,7 +61,7 @@ contract FlashLoan is IMorphoFlashLoanCallback {
      * @param assets The amount of tokens borrowed
      * @param data Encoded data containing the token address
      */
-    function onMorphoFlashLoan(uint256 assets,bytes calldata data) external override {
+    function onMorphoFlashLoan(uint256 assets, bytes calldata data) external override {
         // Add your code here
     }
 }

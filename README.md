@@ -34,12 +34,17 @@ cd morpho-puzzles
 forge install
 ```
 
-#### 3. Add your Ethereum mainnet RPC endpoint to the `.env` file:
+#### 3. Create a `.env` file in the project root by running the following command:
+```bash
+touch .env
+```
+
+#### 4. Add your Ethereum mainnet RPC endpoint to the `.env` file:
 ```bash
 MAINNET_RPC_URL= <Add Your RPC URL>
 ```
 
-#### 4. Ensure your `foundry.toml` includes the RPC alias for mainnet:
+#### 5. Ensure your `foundry.toml` includes the RPC alias for mainnet:
 ```toml
 [rpc_endpoints]
 mainnet = "${MAINNET_RPC_URL}"
@@ -77,9 +82,13 @@ Write the missing implementation in the puzzle contract.
 
 #### Step 4: Run the Tests
 
-Execute the test for a specific puzzle by running the following command:
+Execute the test for a specific puzzle by running the following command pattern:
 ```bash
-forge test --match-path test/Lend.t.sol 
+forge test --match-path test/<PuzzleName>.t.sol
+```
+For example, to run the Lend puzzle test:
+```bash
+forge test --match-path test/Lend.t.sol
 ```
 
 #### Step 5: Iterate Until Success

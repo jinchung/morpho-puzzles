@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
@@ -12,11 +11,21 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * You have 1,000 USDC in this contract.
  * Your goal is to deposit USDC into the Morpho Vault to earn yield.
  * 
+ * GIVEN:
+ * - The vault address is provided in the constructor and stored in `vault`
+ * - The `IVaultV2` interface is available to interact with the vault
+ * - Use `vault.asset()` to get the underlying token address (USDC)
+ * 
  * OBJECTIVE:
  * Implement the supplyAsset() function to:
- * 1. Approve the vault to spend USDC from this contract
- * 2. Deposit the specified amount of USDC into the vault
- * 3. Receive vault shares in return
+ * 1. Get the underlying asset address from the vault
+ * 2. Approve the vault to spend USDC from this contract
+ * 3. Deposit the specified amount of USDC into the vault
+ * 4. Receive vault shares in return
+ * 
+ * HINT:
+ * The IVaultV2 interface follows the ERC-4626 standard.
+ * Look for a function like `deposit(uint256 assets, address receiver)`
  * 
  * SUCCESS CRITERIA:
  * - This contract holds vault shares after execution

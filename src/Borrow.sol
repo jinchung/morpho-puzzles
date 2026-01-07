@@ -11,12 +11,23 @@ import { IMorpho, MarketParams } from "morpho-blue/src/interfaces/IMorpho.sol";
  * You have 10 WETH in this contract.
  * You want to borrow USDT against your WETH collateral using Morpho Blue.
  * 
+ * GIVEN:
+ * - The Morpho Blue address is provided in the constructor and stored in `morpho`
+ * - The market parameters are provided in the constructor and stored in `marketParams`
+ * - The `IMorpho` interface is available to interact with Morpho Blue
+ * - Market params specify: loanToken (USDT), collateralToken (WETH), oracle, IRM, and LLTV
+ * 
  * OBJECTIVE:
  * Implement the addCollateralAndBorrow() function to:
- * 1. Approve Morpho to spend your WETH collateral
- * 2. Supply WETH as collateral to the Morpho market
- * 3. Borrow USDT against your collateral
- * 4. Ensure you maintain a healthy loan-to-value ratio
+ * 1. Get the collateral token address from marketParams
+ * 2. Approve Morpho to spend your WETH collateral
+ * 3. Supply WETH as collateral to the Morpho market
+ * 4. Borrow USDT against your collateral
+ * 5. Ensure you maintain a healthy loan-to-value ratio
+ * 
+ * HINT:
+ * Morpho Blue has separate functions for supplying collateral and borrowing.
+ * Look for `supplyCollateral()` and `borrow()` in the IMorpho interface.
  * 
  * SUCCESS CRITERIA:
  * - This contract has an open borrow position on Morpho
@@ -41,8 +52,7 @@ contract Borrow {
      * @param collateralAmount The amount of WETH to deposit as collateral
      * @param borrowAmount The amount of USDT to borrow
      */
-    function addCollateralAndBorrow( uint256 collateralAmount, uint256 borrowAmount) external {
+    function addCollateralAndBorrow(uint256 collateralAmount, uint256 borrowAmount) external {
         // Add your code here
     }
 }
-

@@ -13,12 +13,24 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * The price of WETH has crashed, making their position unhealthy (underwater).
  * You can liquidate their position to earn a profit.
  * 
+ * GIVEN:
+ * - The Morpho Blue address is provided in the constructor and stored in `morpho`
+ * - The `IMorpho` interface is available to interact with Morpho Blue
+ * - Market parameters are passed as a function parameter
+ * - The borrower's address is passed as a function parameter
+ * 
  * OBJECTIVE:
  * Implement the liquidatePosition() function to:
- * 1. Approve Morpho to spend USDC (to repay the borrower's debt)
- * 2. Call Morpho's liquidate function to repay part of the debt
- * 3. Receive the borrower's collateral (WETH) as a reward
- * 4. The liquidation bonus means you receive more value than you paid
+ * 1. Get the loan token address from marketParams (it's USDC)
+ * 2. Approve Morpho to spend USDC (to repay the borrower's debt)
+ * 3. Call Morpho's liquidate function to repay part of the debt
+ * 4. Receive the borrower's collateral (WETH) as a reward
+ * 5. The liquidation bonus means you receive more value than you paid
+ * 
+ * HINT:
+ * Look for the `liquidate()` function in the IMorpho interface.
+ * It takes marketParams, borrower address, seized collateral amount, and repaid assets.
+ * You can pass 0 for seized collateral to let Morpho calculate it automatically.
  * 
  * SUCCESS CRITERIA:
  * - The borrower's debt is reduced
@@ -47,7 +59,11 @@ contract Liquidate {
      * @param borrower The address of the borrower to liquidate
      * @param amountToRepay The amount of debt to repay (in loan tokens)
      */
-    function liquidatePosition(MarketParams calldata marketParams, address borrower,uint256 amountToRepay) external {
+    function liquidatePosition(
+        MarketParams calldata marketParams,
+        address borrower,
+        uint256 amountToRepay
+    ) external {
         // Add your code here
     }
 }
