@@ -45,6 +45,15 @@ contract Lend {
      * @param amount The amount of underlying asset to deposit
      */
     function supplyAsset(uint256 amount) external {
-        // Add your code here
+        // 1. Get the underlying asset address from the vault
+        address vaultAsset = vault.asset();
+
+        // 2. Approve the vault to spend USDC from this contract
+        IERC20(vaultAsset).approve(address(vault), amount);
+
+        // 3. Deposit the specified amount of USDC into the vault
+        vault.deposit(amount, address(this));
+
+        // 4. Receive vault shares in return
     }
 }
