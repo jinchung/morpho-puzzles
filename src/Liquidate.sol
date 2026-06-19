@@ -64,6 +64,17 @@ contract Liquidate {
         address borrower,
         uint256 amountToRepay
     ) external {
-        // Add your code here
+        // 1. Get the loan token address from marketParams (it's USDC)
+        address loanToken = marketParams.loanToken;
+
+        // 2. Approve Morpho to spend USDC (to repay the borrower's debt)
+        IERC20(loanToken).approve(address(morpho), amountToRepay);
+
+        // 3. Call Morpho's liquidate function to repay part of the debt
+        bytes memory data;
+        morpho.liquidate(marketParams, borrower, 0, amountToRepay, data);
+
+        // 4. Receive the borrower's collateral (WETH) as a reward
+        // 5. The liquidation bonus means you receive more value than you paid
     }
 }
