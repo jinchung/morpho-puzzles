@@ -53,6 +53,20 @@ contract Borrow {
      * @param borrowAmount The amount of USDT to borrow
      */
     function addCollateralAndBorrow(uint256 collateralAmount, uint256 borrowAmount) external {
-        // Add your code here
+
+        // 1. Get the collateral token address from marketParams
+        address collateralToken = marketParams.collateralToken;
+
+        // 2. Approve Morpho to spend your WETH collateral
+        IERC20(collateralToken).approve(address(morpho), collateralAmount);
+
+        // 3. Supply WETH as collateral to the Morpho market
+        bytes memory data;
+        morpho.supplyCollateral(marketParams, collateralAmount, address(this), data);
+
+        // 4. Borrow USDT against your collateral
+        morpho.borrow(marketParams, borrowAmount, 0, address(this), address(this));
+
+        // 5. Ensure you maintain a healthy loan-to-value ratio
     }
 }
