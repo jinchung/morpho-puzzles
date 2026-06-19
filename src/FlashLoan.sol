@@ -34,7 +34,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * 
  * SUCCESS CRITERIA:
  * - The flash loan completes without reverting
- * - Morpho's balance is restored to its original amount
+ * - Morphos balance is restored to its original amount
  * - This contract has no remaining funds after the flash loan
  * 
  * NOTE:
@@ -62,6 +62,15 @@ contract FlashLoan is IMorphoFlashLoanCallback {
      * @param data Encoded data containing the token address
      */
     function onMorphoFlashLoan(uint256 assets, bytes calldata data) external override {
-        // Add your code here
+        // 1. Decode the token address from the `data` parameter
+        address tokenAddress = abi.decode(data, (address));
+
+        // 2. Receive the borrowed assets from Morpho (they're already in this contract)
+        // 3. Use the borrowed assets (in this case, just hold them temporarily)
+
+        // 4. Approve Morpho to take back the borrowed amount
+        IERC20(tokenAddress).approve(address(morpho), assets);
+
+        // 5. Ensure Morpho can reclaim the full loan amount
     }
 }
